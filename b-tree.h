@@ -2,6 +2,7 @@
 #include<iostream> 
 #include<vector>
 #include<string>
+#include <tuple>
 
 #include "reading.h"
 #include "metrics.h"
@@ -16,6 +17,7 @@ typedef struct document
 	//Posicao no arquivo de treinos em que o dado se encontra
 	int index;
 	string doc_class;
+	double similarity = 0;
 } Document;
 
 // A BTree node 
@@ -50,6 +52,8 @@ public:
 
 	Document most_similar_document(char* train_file, vector<double> v, double maior, Document* greatest_sim_doc);
 
+	void most_similar_documents(char* train_file, vector<double> v, int k, vector<Document*>& greatest_docs, double maior = 0, Document* greatest_sim_doc = nullptr);
+
 	friend class BTree;
 };
 
@@ -80,12 +84,23 @@ public:
 	}
 	*/
 
-	Document BTree::most_similar_document(char* train_file, vector<double> v, double maior = 0, Document* greatest_sim_doc = nullptr)
+	Document most_similar_document(char* train_file, vector<double> v, double maior = 0, Document* greatest_sim_doc = nullptr)
 	{
 		vector<double> u = read_at_index(train_file, root->documents[0].index);
 		double similarity = cosine_similarity(v, u);
 
 		return root->most_similar_document(train_file, v, similarity, &root->documents[0]);
+	}
+
+	void most_similar_documents(char* train_file, vector<double> v, int k, vector<Document*>& greatest_docs, double maior = 0, Document* greatest_sim_doc = nullptr)
+	{
+		vector<double> u = read_at_index(train_file, root->documents[0].index);
+		double similarity = cosine_similarity(v, u);
+		root->documents[0].similarity = similarity;
+
+		greatest_docs.push_back(&root->documents[0]);
+
+		return root->most_similar_documents(train_file, v, k, greatest_docs, similarity, &root->documents[0]);
 	}
 
 	//Document BTree::most_similar_document(char* train_file, vector<double> v);

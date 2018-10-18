@@ -12,5 +12,5 @@ private:
 public:
 	kNN() {};
 	void train(char* train_file, char* classes_file);
-	void classify(char* unclassified_documents_file);
+	void classify(int k, char* unclassified_documents_file);
 };

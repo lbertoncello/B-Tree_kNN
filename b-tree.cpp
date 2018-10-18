@@ -116,36 +116,56 @@ Document BTreeNode::most_similar_document(char* train_file, vector<double> v, do
 	}
 }
 
-/*
-Document BTree::most_similar_document(char* train_file, vector<double> v)
+void BTreeNode::most_similar_documents(char* train_file, vector<double> v, int k, vector<Document*>& greatest_docs, double greatest_sim_val, Document* greatest_sim_doc)
 {
+		// Find the first key greater than or equal to k 
 	int i = 0;
 	double similarity;
 	vector<double> u;
 
-	BTreeNode* p = most_similar_node(train_file, v);
-
-	u = read_at_index(train_file, p->documents[0].index);
-	similarity = cosine_similarity(v, u);
-
-	while (i < p->n && similarity >= p->documents[i].similarity)
+	if (i < n)
 	{
-		i++;
-		u = read_at_index(train_file, p->documents[i].index);
+		u = read_at_index(train_file, documents[0].index);
 		similarity = cosine_similarity(v, u);
+		documents[0].similarity = similarity;
+
+		greatest_docs.push_back(&documents[i]);
+
+		while (similarity > decision_factor)
+		{
+			if (similarity > greatest_sim_val)
+			{
+				greatest_sim_val = similarity;
+				greatest_sim_doc = &documents[i];
+			}
+
+			i++;
+
+			if (i < n)
+			{
+				u = read_at_index(train_file, documents[i].index);
+				similarity = cosine_similarity(v, u);
+				documents[i].similarity = similarity;
+
+				greatest_docs.push_back(&documents[i]);
+			}
+			else
+			{
+				break;
+			}
+		}
 	}
-
-	cout << "i: " << i << endl;
-
-	for (int i = 0; i < p->n; i++)
+	
+	if (leaf == false)
 	{
-		cout << "Sim: " << p->documents[i].similarity << endl;
+		C[i]->most_similar_documents(train_file, v, k, greatest_docs, greatest_sim_val, greatest_sim_doc);
 	}
-
-	return p->documents[i];
+	else
+	{
+		return;
+	}
 }
-*/
-  
+
 // The main function that inserts a new key in this B-Tree 
 void BTree::insert(char* train_file, vector<double> v, int index, string doc_class)
 { 
@@ -346,7 +366,7 @@ void BTree::generate_tree(char* train_file, char* classes_file)
 	ifstream train(train_file);
 	vector<string> classes = read_classes(classes_file);
 
-	//Pula a linha 1, que é de cabeçalho
+	//Pula a linha 1, que ï¿½ de cabeï¿½alho
 	getline(train, line);
 	pos = train.tellg();
 	
