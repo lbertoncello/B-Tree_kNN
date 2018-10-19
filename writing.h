@@ -3,4 +3,4 @@
 
 using namespace std;
 
-void write_results(vector<string> classes);
+void write_results(vector<string> classes, const char* output_file);

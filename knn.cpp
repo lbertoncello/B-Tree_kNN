@@ -10,12 +10,17 @@
 
 using namespace std;
 
+kNN::kNN(int number_of_nodes, double decision_factor)
+{
+	model = BTree(number_of_nodes, decision_factor);
+}
+
 bool comparator(Document* d1, Document* d2)
 {
 	return d1->similarity < d2->similarity;
 }
 
-void kNN::train(char* train_file, char* classes_file)
+void kNN::train(const char* train_file, const char* classes_file)
 {
 	this->train_file = train_file;
 	this->model.generate_tree(train_file, classes_file);
@@ -52,7 +57,7 @@ string most_frequent_class(vector<Document*> nearest_neighbors, int k)
 	return chosen_class;
 }
 
-void kNN::classify(int k, char* unclassified_documents_file)
+void kNN::classify(int k, const char* unclassified_documents_file, const char* output_file)
 {
 	vector<string> classes;
 	vector<vector<double>> documents = read_unclassified_documents(unclassified_documents_file);
@@ -66,9 +71,7 @@ void kNN::classify(int k, char* unclassified_documents_file)
 		std::sort(nearest_neighbors.rbegin(), nearest_neighbors.rend(), comparator);
 
 		classes.push_back(most_frequent_class(nearest_neighbors, k));
-
-		//cout << "CLASSE: " << classes[i] << endl;
 	}
 
-	write_results(classes);
+	write_results(classes, output_file);
 }

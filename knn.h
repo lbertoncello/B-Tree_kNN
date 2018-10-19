@@ -1,16 +1,13 @@
 #include "b-tree.h"
 
-#define NUMBER_OF_NODES 5
-#define DECISION_FACTOR 0.65
-
 class kNN
 {
 private:
-	BTree model = BTree(NUMBER_OF_NODES, DECISION_FACTOR);
-	char* train_file;
+	BTree model;
+	const char* train_file;
 
 public:
-	kNN() {};
-	void train(char* train_file, char* classes_file);
-	void classify(int k, char* unclassified_documents_file);
+	kNN(int number_of_nodes, double decision_factor);
+	void train(const char* train_file, const char* classes_file);
+	void classify(int k, const char* unclassified_documents_file, const char* output_file);
 };

@@ -5,13 +5,11 @@
 
 #include "writing.h"
 
-#define OUTPUT_FILE_NAME "./Iris/classifieds.txt"
-
-void write_results(vector<string> classes)
+void write_results(vector<string> classes, const char* output_file)
 {
 	ofstream saida;
 
-	saida.open(OUTPUT_FILE_NAME);
+	saida.open(output_file);
 	
 	for (int i = 0; i < classes.size(); i++)
 	{

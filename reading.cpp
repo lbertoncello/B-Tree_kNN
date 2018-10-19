@@ -7,7 +7,7 @@
 
 using namespace std;
 
-int number_of_lines(char* train_file)
+int number_of_lines(const char* train_file)
 {
 	string line;
 	ifstream train(train_file);
@@ -22,7 +22,7 @@ int number_of_lines(char* train_file)
 	return stoi(line.substr(0, 1), nullptr);
 }
 
-int number_of_columns(char* train_file)
+int number_of_columns(const char* train_file)
 {
 	string line;
 	ifstream train(train_file);
@@ -65,7 +65,7 @@ vector<double> read_vector(string line)
 }
 
 //Le o vetor na linha indicada pela posicao
-vector<double> read_at_index(char* train_file, int pos)
+vector<double> read_at_index(const char* train_file, int pos)
 {
 	string line;
 	vector<double> v;
@@ -80,7 +80,7 @@ vector<double> read_at_index(char* train_file, int pos)
 	return v;
 }
 
-string read_class_at_index(char* class_file, int line_number)
+string read_class_at_index(const char* class_file, int line_number)
 {
 	string line;
 	ifstream class_f(class_file);
@@ -93,7 +93,7 @@ string read_class_at_index(char* class_file, int line_number)
 	return line;
 }
 
-vector<string> read_classes(char* class_file)
+vector<string> read_classes(const char* class_file)
 {
 	string line;
 	vector<string> classes;
@@ -107,7 +107,7 @@ vector<string> read_classes(char* class_file)
 	return classes;
 }
 
-vector<vector<double>> read_unclassified_documents(char* documents_file)
+vector<vector<double>> read_unclassified_documents(const char* documents_file)
 {
 	string line;
 	vector<double> document;
@@ -123,7 +123,7 @@ vector<vector<double>> read_unclassified_documents(char* documents_file)
 	return documents;
 }
 
-void print_file(char* train_file)
+void print_file(const char* train_file)
 {
 	string line;
 	ifstream train(train_file);

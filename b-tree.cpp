@@ -72,7 +72,7 @@ BTreeNode *BTreeNode::search(double similarity)
 } 
 */
 
-Document BTreeNode::most_similar_document(char* train_file, vector<double> v, double greatest_sim_val, Document* greatest_sim_doc)
+Document BTreeNode::most_similar_document(const char* train_file, vector<double> v, double greatest_sim_val, Document* greatest_sim_doc)
 {
 	// Find the first key greater than or equal to k 
 	int i = 0;
@@ -116,7 +116,7 @@ Document BTreeNode::most_similar_document(char* train_file, vector<double> v, do
 	}
 }
 
-void BTreeNode::most_similar_documents(char* train_file, vector<double> v, int k, vector<Document*>& greatest_docs, double greatest_sim_val, Document* greatest_sim_doc)
+void BTreeNode::most_similar_documents(const char* train_file, vector<double> v, int k, vector<Document*>& greatest_docs, double greatest_sim_val, Document* greatest_sim_doc)
 {
 		// Find the first key greater than or equal to k 
 	int i = 0;
@@ -167,7 +167,7 @@ void BTreeNode::most_similar_documents(char* train_file, vector<double> v, int k
 }
 
 // The main function that inserts a new key in this B-Tree 
-void BTree::insert(char* train_file, vector<double> v, int index, string doc_class)
+void BTree::insert(const char* train_file, vector<double> v, int index, string doc_class)
 { 
 	double similarity;
 	vector<double> u;
@@ -220,7 +220,7 @@ void BTree::insert(char* train_file, vector<double> v, int index, string doc_cla
 // A utility function to insert a new key in this node 
 // The assumption is, the node must be non-full when this 
 // function is called 
-void BTreeNode::insertNonFull(char* train_file, vector<double> v, int index, string doc_class)
+void BTreeNode::insertNonFull(const char* train_file, vector<double> v, int index, string doc_class)
 { 
     // Initialize index as index of rightmost element 
     int i = n-1; 
@@ -357,7 +357,7 @@ void BTreeNode::splitChild(int i, BTreeNode *y)
     n = n + 1; 
 } 
 
-void BTree::generate_tree(char* train_file, char* classes_file)
+void BTree::generate_tree(const char* train_file, const char* classes_file)
 {
 	int pos = 0;
 	vector<double> v;
