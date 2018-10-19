@@ -67,7 +67,7 @@ void kNN::classify(int k, char* unclassified_documents_file)
 
 		classes.push_back(most_frequent_class(nearest_neighbors, k));
 
-		cout << "CLASSE: " << classes[i] << endl;
+		//cout << "CLASSE: " << classes[i] << endl;
 	}
 
 	write_results(classes);

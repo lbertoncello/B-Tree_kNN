@@ -185,32 +185,35 @@ void BTree::insert(char* train_file, vector<double> v, int index, string doc_cla
     else // If tree is not empty 
     { 
         // If root is full, then tree grows in height 
-        if (root->n == 2*t-1) 
-        { 
-            // Allocate memory for new root 
-            BTreeNode *s = new BTreeNode(t, false); 
-  
-            // Make old root as child of new root 
-            s->C[0] = root; 
-  
-            // Split the old root and move 1 key to the new root 
-            s->splitChild(0, root); 
-  
-            // New root has two children now.  Decide which of the 
-            // two children is going to have new key 
-            int i = 0; 
+		if (root->n == 2 * t - 1)
+		{
+			// Allocate memory for new root 
+			BTreeNode *s = new BTreeNode(t, false);
+
+			// Make old root as child of new root 
+			s->C[0] = root;
+
+			// Split the old root and move 1 key to the new root 
+			s->splitChild(0, root);
+
+			// New root has two children now.  Decide which of the 
+			// two children is going to have new key 
+			int i = 0;
 			u = read_at_index(train_file, s->documents[0].index);
 			similarity = cosine_similarity(v, u);
 
-            if (similarity < decision_factor)
-                i++; 
-            s->C[i]->insertNonFull(train_file, v, index, doc_class); 
-  
-            // Change root 
-            root = s; 
-        } 
-        else  // If root is not full, call insertNonFull for root 
-            root->insertNonFull(train_file, v, index, doc_class);
+			if (similarity < decision_factor)
+				i++;
+			s->C[i]->insertNonFull(train_file, v, index, doc_class);
+
+			// Change root 
+			root = s;
+		}
+		else  // If root is not full, call insertNonFull for root 
+		{
+			root->insertNonFull(train_file, v, index, doc_class);
+		}
+            
     } 
 } 
   
@@ -223,7 +226,7 @@ void BTreeNode::insertNonFull(char* train_file, vector<double> v, int index, str
     int i = n-1; 
 	double similarity;
 	vector<double> u;
-  
+
     // If this is a leaf node 
     if (leaf == true) 
     { 
@@ -231,7 +234,6 @@ void BTreeNode::insertNonFull(char* train_file, vector<double> v, int index, str
 		{
 			u = read_at_index(train_file, documents[i].index);
 			similarity = cosine_similarity(v, u);
-
 			// The following loop does two things 
 			// a) Finds the location of new key to be inserted 
 			// b) Moves all greater keys to one place ahead 
@@ -241,7 +243,6 @@ void BTreeNode::insertNonFull(char* train_file, vector<double> v, int index, str
 				documents[i + 1].index = documents[i].index;
 				documents[i + 1].doc_class = documents[i].doc_class;
 				i--;
-
 				if (i >= 0)
 				{
 					u = read_at_index(train_file, documents[i].index);
@@ -254,7 +255,6 @@ void BTreeNode::insertNonFull(char* train_file, vector<double> v, int index, str
 
 			}
 		}
-  
         // Insert the new key at found location 
         //documents[i+1].similarity = similarity; 
 		documents[i + 1].index = index;
@@ -359,7 +359,7 @@ void BTreeNode::splitChild(int i, BTreeNode *y)
 
 void BTree::generate_tree(char* train_file, char* classes_file)
 {
-	int pos;
+	int pos = 0;
 	vector<double> v;
 	string line;
 	int line_number = 0;
@@ -367,19 +367,20 @@ void BTree::generate_tree(char* train_file, char* classes_file)
 	vector<string> classes = read_classes(classes_file);
 
 	//Pula a linha 1, que � de cabe�alho
-	getline(train, line);
-	pos = train.tellg();
+	//getline(train, line);
+	//pos = train.tellg();
+	
 	
 	while (getline(train, line))
 	{
 		v = read_vector(line);
 
 		insert(train_file, v, pos, classes[line_number]);
-
 		pos = train.tellg();
 		line_number++;
 	}
-	traverse();
+
+	//traverse();
 	cout << endl;
 
 	train.close();

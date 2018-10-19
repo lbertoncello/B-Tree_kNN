@@ -40,7 +40,6 @@ int number_of_columns(char* train_file)
 vector<double> read_vector(string line)
 {
 	vector<double> v;
-
 	double number;
 
 	int i = 0;
@@ -54,7 +53,7 @@ vector<double> read_vector(string line)
 		}
 
 		//Seleciona o trecho onde ha espaco (fim da coluna)
-		number = stoi(line.substr(i, pos_espaco));
+		number = stod(line.substr(i, pos_espaco));
 		v.push_back(number);
 
 		//Incrementa o que foi percorrido
@@ -62,7 +61,6 @@ vector<double> read_vector(string line)
 	}
 
 	//cout << endl;
-
 	return v;
 }
 
