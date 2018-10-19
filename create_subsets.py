@@ -13,6 +13,8 @@ file.close()
 
 dataset = []
 
+number_of_columns = lines[0].count(',')
+
 for line in lines:
 	vec = np.array(line.replace('\n', '').split(','))
 	dataset.append(vec)
@@ -26,17 +28,17 @@ dataset_dirname = os.path.dirname(dataset_file)
 
 with open('%s/treino.txt' % dataset_dirname, 'w') as f:
     for vec in X_train:
-        f.write("%s\n" % str(" ".join(map(str, vec[:4].astype(np.float)))))
+        f.write("%s\n" % str(" ".join(map(str, vec[:number_of_columns].astype(np.float)))))
 
 with open('%s/classes.txt' % dataset_dirname, 'w') as f:
     for vec in X_train:
-        f.write("%s\n" % str(vec[4]))
+        f.write("%s\n" % str(vec[number_of_columns]))
 		
 with open('%s/entrada.txt' % dataset_dirname, 'w') as f:
     for vec in X_test:
-        f.write("%s\n" % str(" ".join(map(str, vec[:4].astype(np.float)))))
+        f.write("%s\n" % str(" ".join(map(str, vec[:number_of_columns].astype(np.float)))))
 		
 with open('%s/classes_corretas.txt' % dataset_dirname, 'w') as f:
     for vec in X_test:
-        f.write("%s\n" % str(vec[4]))
+        f.write("%s\n" % str(vec[number_of_columns]))
 	
