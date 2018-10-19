@@ -16,4 +16,4 @@ Notes:
 
   Decision factor is the value at which similarity will be compared to decide whether the search goes left or right.
   
-  The dataset file must be in csv format, using ',' as delimiter. The final column should be the document class.
+  The dataset file must be in csv format, using ',' as delimiter. The last column should be the document class.
