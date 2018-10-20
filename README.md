@@ -6,14 +6,14 @@ To generate the executable, type:
 
 To run tests, just type:
     
-    python3 run_experiments.py [dataset file] [k value] [number of nodes] [decision factor] [number of experiments] [size of the test subset]
+    python3 run_experiments.py [indexed dataset] [dataset classes] [k value] [number of nodes] [decision factor] [number of experiments]
     
 Example:
 
-    python3 run_experiments.py ./Iris/iris.data.txt 3 5 0.5 10 0.25
+    python3 run_experiments.py ./Iris/dataset.txt ./Iris/dataset_classes.txt 1 8 0.5 1 
   
 Notes:
 
   Decision factor is the value at which similarity will be compared to decide whether the search goes left or right.
   
-  The dataset file must be in csv format, using ',' as delimiter. The last column should be the document class.
+  The indexed dataset file must be in csv format, using ',' as delimiter.
