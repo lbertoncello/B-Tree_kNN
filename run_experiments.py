@@ -42,7 +42,7 @@ def run_tests(dataset_file_name, classes_file_name, k, number_of_nodes, decision
 	dataset_dirname = os.path.dirname(dataset_file_name)
 	np.set_printoptions(precision=2)
 
-	skf = StratifiedKFold(n_splits=4)
+	skf = StratifiedKFold(n_splits=4, shuffle=True)
 
 	for train_index, test_index in skf.split(dataset, classes):
 		with open('%s/treino.txt' % dataset_dirname, 'w') as f:
