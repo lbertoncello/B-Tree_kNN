@@ -6,13 +6,6 @@ from sklearn.model_selection import StratifiedKFold
 import create_subsets as cs
 import analyzes_results as ar
 
-dataset_file_name = sys.argv[1]
-classes_file_name = sys.argv[2]
-k = int(sys.argv[3])
-number_of_nodes = sys.argv[4]
-decision_factor = sys.argv[5]
-number_of_experiments = int(sys.argv[6])
-
 n_splits = 4
 		
 def run_tests(dataset_file_name, classes_file_name, k, number_of_nodes, decision_factor):
@@ -65,7 +58,36 @@ def run_tests(dataset_file_name, classes_file_name, k, number_of_nodes, decision
 
 	return accuracy_avg, precision_avg, recall_avg, duration_avg
 
+def print_results(accuracy_avg, precision_avg, recall_avg, duration_avg):
+	print("=======================Result=======================")
+	print("Average Accuracy: %s" % accuracy_avg)
+	print("Average Precision: %s" % precision_avg)
+	print("Average Recall: %s" % recall_avg)
+	print("Time: %s" % duration_avg)
+	print("====================================================")
+
+def write_results(dir, accuracy_avg, precision_avg, recall_avg, duration_avg, k, number_of_nodes, decision_factor, number_of_tests):
+	with open('%s/results.txt' % dir, 'w') as f:
+		f.write("%s\n" % accuracy_avg)
+		f.write("%s\n" % precision_avg)
+		f.write("%s\n" % recall_avg)
+		f.write("%s\n" % duration_avg)
+
+	with open('%s/experiment_data.txt' % dir, 'w') as f:
+		f.write("%s\n" % k)
+		f.write("%s\n" % number_of_nodes)
+		f.write("%s\n" % decision_factor)
+		f.write("%s\n" % number_of_tests)
+
 def main():
+	dataset_file_name = sys.argv[1]
+	classes_file_name = sys.argv[2]
+	k = int(sys.argv[3])
+	number_of_nodes = sys.argv[4]
+	decision_factor = sys.argv[5]
+	number_of_tests = int(sys.argv[6])
+	output_dir = sys.argv[7]
+
 	accuracy_avg = 0
 	precision_avg = 0
 	recall_avg = 0
@@ -73,7 +95,8 @@ def main():
 
 	print("---------------------Experiment---------------------")
 
-	for i in range(number_of_experiments):
+	for i in range(number_of_tests):
+
 		accuracy, precision, recall, duration = run_tests(dataset_file_name, classes_file_name, k, number_of_nodes, decision_factor)
 
 		print("#################Test#################")
@@ -90,17 +113,13 @@ def main():
 
 	print("----------------------------------------------------")
 
-	accuracy_avg = accuracy_avg / number_of_experiments
-	precision_avg = precision_avg / number_of_experiments
-	recall_avg = recall_avg / number_of_experiments
-	duration_avg = duration_avg / number_of_experiments
+	accuracy_avg = accuracy_avg / number_of_tests
+	precision_avg = precision_avg / number_of_tests
+	recall_avg = recall_avg / number_of_tests
+	duration_avg = duration_avg / number_of_tests
 
-	print("=======================Result=======================")
-	print("Average Accuracy: %s" % accuracy_avg)
-	print("Average Precision: %s" % precision_avg)
-	print("Average Recall: %s" % recall_avg)
-	print("Time: %s" % duration_avg)
-	print("====================================================")
+	print_results(accuracy_avg, precision_avg, recall_avg, duration_avg)
+	write_results(output_dir, accuracy_avg, precision_avg, recall_avg, duration_avg, k, number_of_nodes, decision_factor, number_of_tests)
 	
 
 if __name__ == "__main__":
