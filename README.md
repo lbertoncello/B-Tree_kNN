@@ -6,11 +6,11 @@ To generate the executable, type:
 
 To run tests, just type:
     
-    python3 run_experiments.py [indexed dataset] [dataset classes] [k value] [number of nodes] [decision factor] [number of experiments]
+    python3 run_experiments.py [indexed dataset] [dataset classes] [k value] [number of nodes] [decision factor] [number of experiments] [output directory]
     
 Example:
 
-    python3 run_experiments.py ./Iris/dataset.txt ./Iris/dataset_classes.txt 1 8 0.5 1 
+    python3 run_experiments.py ./Iris/dataset.txt ./Iris/dataset_classes.txt 1 8 0.5 1 ./Iris/
   
 Notes:
 
