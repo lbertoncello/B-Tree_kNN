@@ -1,25 +1,93 @@
-import sys
+def read_results(correct, predicted):
+	file = open(correct, 'r')
+	correct_classes = file.readlines()
+	file.close()
 
-correct = sys.argv[1]
-predicted = sys.argv[2]
+	file = open(predicted, 'r')
+	predicted_classes = file.readlines()
+	file.close()
 
-file = open(correct, 'r')
-correct_classes = file.readlines()
-file.close()
+	return correct_classes, predicted_classes
 
-file = open(predicted, 'r')
-predicted_classes = file.readlines()
-file.close()
+def generate_confusion_matrix(correct_classes, predicted_classes):
+	confusion_matrix = {}
 
-error_count = 0
+	#Inicializing the confusion matrix
+	for cl in correct_classes:
+		if (cl in confusion_matrix) == False:
+			confusion_matrix[cl] = {}
 
-for i in range(len(correct_classes)):
-	if correct_classes[i] != predicted_classes[i]:
-		#print("Correto: %s" % correct_classes[i])
-		#print("Predito: %s" % predicted_classes[i])
-		error_count += 1
+	for cl in confusion_matrix:
+		for _cl in confusion_matrix:
+			confusion_matrix[cl][_cl] = 0
+
+	for i in range(len(correct_classes)):
+		confusion_matrix[correct_classes[i]][predicted_classes[i]] += 1
 		
-acurracy = 1 - error_count / len(correct_classes)
+	return confusion_matrix
 
-print("Quantidade de erros: %s" % error_count)
-print("Taxa de acertos: %s" % acurracy)
+def metrics_calc(confusion_matrix):
+	true_positive = {}
+	true_negative = {}
+	false_positive = {}
+	false_negative = {}
+
+	accuracy = {}
+	precision = {}
+	recall = {}
+	accuracy_avg = 0
+	precision_avg = 0
+	recall_avg = 0
+
+	#Inicializa os valores
+	for cl in confusion_matrix:
+		true_negative[cl] = 0
+		false_negative[cl] = 0
+		false_positive[cl] = 0
+
+	for cl in confusion_matrix:
+		true_positive[cl] = confusion_matrix[cl][cl]
+
+		for _cl in confusion_matrix:
+			if _cl != cl:
+				false_positive[cl] += confusion_matrix[_cl][cl]
+
+		for _cl in confusion_matrix:
+			if _cl != cl:
+				false_negative[cl] += confusion_matrix[cl][_cl]
+
+		for _cl in confusion_matrix:
+			if _cl != cl:
+				for __cl in confusion_matrix:
+					if __cl != cl:
+						true_negative[cl] += confusion_matrix[_cl][__cl] 
+
+		if true_positive[cl] != 0:
+			accuracy[cl] = (true_positive[cl] + true_negative[cl]) / (true_positive[cl] + true_negative[cl] + false_positive[cl] + false_negative[cl])
+			precision[cl] = true_positive[cl] / (true_positive[cl] + false_positive[cl])
+			recall[cl] = true_positive[cl] / (true_positive[cl] + false_negative[cl])
+		else:
+			accuracy[cl] = 0
+			precision[cl] = 0
+			recall[cl] = 0
+
+		accuracy_avg += accuracy[cl]
+		precision_avg += precision[cl]
+		recall_avg += recall[cl]
+
+	accuracy_avg = accuracy_avg / len(accuracy)
+	precision_avg = precision_avg / len(precision)
+	recall_avg = recall_avg / len(recall)
+	
+	#print("Accuracy: %s" % accuracy_avg)
+	#print("Precision: %s" % precision_avg)
+	#print("Recall: %s" % recall_avg)
+
+	return accuracy_avg, precision_avg, recall_avg
+
+def analyze(correct, predicted):
+	correct_classes, predicted_classes = read_results(correct, predicted)
+	confusion_matrix = generate_confusion_matrix(correct_classes, predicted_classes)
+	accuracy_avg, precision_avg, recall_avg = metrics_calc(confusion_matrix)
+
+	return accuracy_avg, precision_avg, recall_avg
