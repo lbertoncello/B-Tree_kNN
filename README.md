@@ -6,7 +6,7 @@ To generate the executable, type:
 
 To run tests, just type:
     
-    python3 run_experiments.py [indexed dataset] [dataset classes] [k value] [number of nodes] [decision factor] [number of experiments] [output directory]
+    python3 run_experiments.py [indexed dataset] [dataset classes] [k value] [number of nodes] [decision factor] [number of tests] [output directory]
     
 Example:
 
