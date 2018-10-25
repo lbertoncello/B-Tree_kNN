@@ -31,10 +31,12 @@ string most_frequent_class(vector<Document*> nearest_neighbors, int k)
 	map<string, int> counter;
 	int maior = 0;
 	string chosen_class;
+	
+	
 
 	for (int i = 0; i < k; i++)
 	{
-		//Verifica se o elemento já está no map
+		//Verifica se o elemento jÃ¡ estÃ¡ no map
 		if (counter.find(nearest_neighbors[i]->doc_class) != counter.end())
 		{
 			counter[nearest_neighbors[i]->doc_class]++;
