@@ -29,7 +29,7 @@ BTreeNode::BTreeNode(int t1, bool leaf1)
 } 
   
 // Function to traverse all nodes in a subtree rooted with this node 
-void BTreeNode::traverse() 
+void BTreeNode::traverse(ifstream& train_file) 
 { 
     // There are n keys and n+1 children, travers through n keys 
     // and first n children 
@@ -39,15 +39,15 @@ void BTreeNode::traverse()
         // If this is not leaf, then before printing key[i], 
         // traverse the subtree rooted with child C[i]. 
         if (leaf == false) 
-            C[i]->traverse(); 
+            C[i]->traverse(train_file); 
 		//cout << " Pos: " << documents[i].index;
-		vector<double> v = read_at_index("treino.txt", documents[i].index);
+		vector<double> v = read_at_index(train_file, documents[i].index);
 		cout << "V = ( " << v[0] << ", " << v[1] << ") " << endl;;
     } 
   
     // Print the subtree rooted with last child 
     if (leaf == false) 
-        C[i]->traverse(); 
+        C[i]->traverse(train_file); 
 } 
  
 /*
@@ -72,7 +72,7 @@ BTreeNode *BTreeNode::search(double similarity)
 } 
 */
 
-Document BTreeNode::most_similar_document(const char* train_file, vector<double> v, double greatest_sim_val, Document* greatest_sim_doc)
+Document BTreeNode::most_similar_document(ifstream& train_file, vector<double> v, double greatest_sim_val, Document* greatest_sim_doc)
 {
 	// Find the first key greater than or equal to k 
 	int i = 0;
@@ -116,19 +116,17 @@ Document BTreeNode::most_similar_document(const char* train_file, vector<double>
 	}
 }
 
-void BTreeNode::most_similar_documents(const char* train_file, vector<double> v, int k, vector<Document*>& greatest_docs, double greatest_sim_val, Document* greatest_sim_doc)
+void BTreeNode::most_similar_documents(ifstream& train_file, vector<double> v, int k, vector<Document*>& greatest_docs, double greatest_sim_val, Document* greatest_sim_doc)
 {
 		// Find the first key greater than or equal to k 
 	int i = 0;
 	double similarity;
 	vector<double> u;
-
 	if (i < n)
 	{
 		u = read_at_index(train_file, documents[0].index);
 		similarity = cosine_similarity(v, u);
 		documents[0].similarity = similarity;
-
 		greatest_docs.push_back(&documents[i]);
 
 		while (similarity > decision_factor)
@@ -167,7 +165,7 @@ void BTreeNode::most_similar_documents(const char* train_file, vector<double> v,
 }
 
 // The main function that inserts a new key in this B-Tree 
-void BTree::insert(const char* train_file, vector<double> v, int index, string doc_class)
+void BTree::insert(ifstream& train_file, vector<double> v, int index, string doc_class)
 { 
 	double similarity;
 	vector<double> u;
@@ -220,7 +218,7 @@ void BTree::insert(const char* train_file, vector<double> v, int index, string d
 // A utility function to insert a new key in this node 
 // The assumption is, the node must be non-full when this 
 // function is called 
-void BTreeNode::insertNonFull(const char* train_file, vector<double> v, int index, string doc_class)
+void BTreeNode::insertNonFull(ifstream& train_file, vector<double> v, int index, string doc_class)
 { 
     // Initialize index as index of rightmost element 
     int i = n-1; 
@@ -357,31 +355,27 @@ void BTreeNode::splitChild(int i, BTreeNode *y)
     n = n + 1; 
 } 
 
-void BTree::generate_tree(const char* train_file, const char* classes_file)
+void BTree::generate_tree(ifstream& train_file, const char* classes_file)
 {
 	int pos = 0;
 	vector<double> v;
 	string line;
 	int line_number = 0;
-	ifstream train(train_file);
+	//ifstream train(train_file);
 	vector<string> classes = read_classes(classes_file);
 
 	//Pula a linha 1, que � de cabe�alho
 	//getline(train, line);
 	//pos = train.tellg();
-	
-	
-	while (getline(train, line))
+
+	while (getline(train_file, line))
 	{
 		v = read_vector(line);
 
 		insert(train_file, v, pos, classes[line_number]);
-		pos = train.tellg();
+		pos = train_file.tellg();
 		line_number++;
 	}
-
 	//traverse();
-	cout << endl;
-
-	train.close();
+	//cout << endl;
 }

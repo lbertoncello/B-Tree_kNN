@@ -65,17 +65,17 @@ vector<double> read_vector(string line)
 }
 
 //Le o vetor na linha indicada pela posicao
-vector<double> read_at_index(const char* train_file, int pos)
+vector<double> read_at_index(ifstream& train, int pos)
 {
+	int previous_pos = train.tellg();
+
 	string line;
 	vector<double> v;
-	ifstream train(train_file);
 
 	train.seekg(pos);
 	getline(train, line);
 	v = read_vector(line);
-
-	train.close();
+	train.seekg(previous_pos);
 
 	return v;
 }
@@ -151,3 +151,16 @@ for (int i = 0; i < length; i++)
 }
 */
 
+vector<int> read_k(const char* k_file)
+{
+	vector<int> k;
+	string line;
+	ifstream file(k_file);
+
+	while (getline(file, line))
+	{
+		k.push_back(stoi(line));
+	}
+
+	return k;
+}

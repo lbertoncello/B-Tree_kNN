@@ -5,7 +5,6 @@
 #include <iterator>
 
 #include "knn.h"
-#include "reading.h"
 #include "writing.h"
 
 using namespace std;
@@ -22,8 +21,8 @@ bool comparator(Document* d1, Document* d2)
 
 void kNN::train(const char* train_file, const char* classes_file)
 {
-	this->train_file = train_file;
-	this->model.generate_tree(train_file, classes_file);
+	this->train_file.open(train_file, std::ifstream::in);
+	this->model.generate_tree(this->train_file, classes_file);
 }
 
 string most_frequent_class(vector<Document*> nearest_neighbors, int k)
@@ -31,12 +30,15 @@ string most_frequent_class(vector<Document*> nearest_neighbors, int k)
 	map<string, int> counter;
 	int maior = 0;
 	string chosen_class;
-	
-	
+
+	if (k > nearest_neighbors.size())
+	{
+		k = nearest_neighbors.size();
+	}
 
 	for (int i = 0; i < k; i++)
 	{
-		//Verifica se o elemento já está no map
+		//Verifica se o elemento j� est� no map
 		if (counter.find(nearest_neighbors[i]->doc_class) != counter.end())
 		{
 			counter[nearest_neighbors[i]->doc_class]++;
@@ -68,7 +70,9 @@ void kNN::classify(int k, const char* unclassified_documents_file, const char* o
 	{
 		vector<Document*> nearest_neighbors;
 
-		model.most_similar_documents(train_file, documents[i], k, nearest_neighbors);
+		this->train_file.clear();
+
+		model.most_similar_documents(this->train_file, documents[i], k, nearest_neighbors);
 
 		std::sort(nearest_neighbors.rbegin(), nearest_neighbors.rend(), comparator);
 
@@ -76,4 +80,9 @@ void kNN::classify(int k, const char* unclassified_documents_file, const char* o
 	}
 
 	write_results(classes, output_file);
+}
+
+void kNN::close()
+{
+	this->train_file.close();
 }
