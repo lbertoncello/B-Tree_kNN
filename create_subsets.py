@@ -12,10 +12,6 @@ def create_subset(dataset_file_name, classes_file_name, subsets_dirname):
 
 	skf = StratifiedKFold(n_splits=n_splits, shuffle=True)
 
-	accuracy_avg = 0
-	precision_avg = 0
-	recall_avg = 0
-	duration_avg = 0
 	i = 0
 
 	for train_index, test_index in skf.split(dataset, classes):
