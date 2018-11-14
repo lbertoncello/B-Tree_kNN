@@ -6,7 +6,7 @@ import analyzes_results3 as ar
 
 n_splits = 4
 		
-def run_tests(dirname, index, k, number_of_nodes, decision_factor):
+def run_tests(dirname, k_list, k_file, number_of_nodes, decision_factor, output_dir):
 	accuracy_avg = 0
 	precision_micro_avg = 0
 	precision_macro_avg = 0
@@ -16,37 +16,47 @@ def run_tests(dirname, index, k, number_of_nodes, decision_factor):
 	f1_macro_avg = 0
 	duration_avg = 0
 
+	durations = []
+
 	for i in range(n_splits):
+		print("-----------------------Classifying-----------------------")
 		dataset_dirname = "%s/%s" % (dirname, i)
 
 		start = time.time()
-		os.system("./knn %s/treino.txt %s/classes.txt %s/entrada.txt %s %s %s %s > /dev/null" % (dataset_dirname, dataset_dirname, 
-			dataset_dirname, k, number_of_nodes, decision_factor, dataset_dirname))
+		os.system("./knn %s/treino.txt %s/classes.txt %s/entrada.txt %s %s %s %s" % (dataset_dirname, dataset_dirname, 
+			dataset_dirname, k_file, number_of_nodes, decision_factor, dataset_dirname))
 		end = time.time()
 
-		duration = end - start	
+		durations.append(end - start)
 
-		accuracy, precision_micro, precision_macro, recall_micro, recall_macro, f1_micro, f1_macro = ar.analyze(dataset_dirname + "/classes_corretas.txt", dataset_dirname + "/" + str(i) + "/classifieds.txt")
+	for i in range(len(k_list)):
+		print("--------------------Analising Results--------------------")
+		for j in range(n_splits):
+			dataset_dirname = "%s/%s" % (dirname, j)
 
-		accuracy_avg += accuracy
-		precision_micro_avg += precision_micro
-		precision_macro_avg += precision_macro
-		recall_micro_avg += recall_micro
-		recall_macro_avg += recall_macro
-		f1_micro_avg += f1_micro
-		f1_macro_avg += f1_macro
-		duration_avg += duration
-	
-	accuracy_avg = accuracy_avg / n_splits
-	precision_micro_avg = precision_micro_avg / n_splits
-	precision_macro_avg = precision_macro_avg / n_splits
-	recall_micro_avg = recall_micro_avg / n_splits
-	recall_macro_avg = recall_macro_avg / n_splits
-	f1_micro_avg = f1_micro_avg / n_splits
-	f1_macro_avg = f1_macro_avg / n_splits
-	duration_avg = duration_avg / n_splits
+			accuracy, precision_micro, precision_macro, recall_micro, recall_macro, f1_micro, f1_macro = ar.analyze(dataset_dirname + "/classes_corretas.txt", dataset_dirname + "/" + str(i) + "/classifieds.txt")
 
-	return accuracy, precision_micro_avg, precision_macro_avg, recall_micro_avg, recall_macro_avg, f1_micro_avg, f1_macro_avg, duration_avg
+			accuracy_avg += accuracy
+			precision_micro_avg += precision_micro
+			precision_macro_avg += precision_macro
+			recall_micro_avg += recall_micro
+			recall_macro_avg += recall_macro
+			f1_micro_avg += f1_micro
+			f1_macro_avg += f1_macro
+			duration_avg += durations[j]
+		
+		accuracy_avg = accuracy_avg / n_splits
+		precision_micro_avg = precision_micro_avg / n_splits
+		precision_macro_avg = precision_macro_avg / n_splits
+		recall_micro_avg = recall_micro_avg / n_splits
+		recall_macro_avg = recall_macro_avg / n_splits
+		f1_micro_avg = f1_micro_avg / n_splits
+		f1_macro_avg = f1_macro_avg / n_splits
+		duration_avg = duration_avg / n_splits
+
+		print_results(accuracy_avg, precision_micro_avg, precision_macro_avg, recall_micro_avg, recall_macro_avg, f1_micro_avg, f1_macro_avg, duration_avg)
+		write_results(output_dir, accuracy_avg, precision_micro_avg, precision_macro_avg, recall_micro_avg, recall_macro_avg, f1_micro_avg, f1_macro_avg, duration_avg, i, k_list[i], number_of_nodes, decision_factor)
+
 
 def print_results(accuracy_avg, precision_micro, precision_macro, recall_micro, recall_macro, f1_micro, f1_macro, duration_avg):
 	print("=======================Result=======================")
@@ -60,7 +70,7 @@ def print_results(accuracy_avg, precision_micro, precision_macro, recall_micro, 
 	print("Time: %s" % duration_avg)
 	print("====================================================")
 
-def write_results(dir, accuracy, precision_micro, precision_macro, recall_micro, recall_macro, f1_micro, f1_macro, duration_avg, i, k, number_of_nodes, decision_factor, number_of_tests):
+def write_results(dir, accuracy, precision_micro, precision_macro, recall_micro, recall_macro, f1_micro, f1_macro, duration_avg, i, k, number_of_nodes, decision_factor):
 	os.makedirs(dir + "/" + str(i), exist_ok=True)
 	
 	with open('%s/results.txt' % (dir + "/" + str(i)), 'w') as f:
@@ -77,7 +87,6 @@ def write_results(dir, accuracy, precision_micro, precision_macro, recall_micro,
 		f.write("%s\n" % k)
 		f.write("%s\n" % number_of_nodes)
 		f.write("%s\n" % decision_factor)
-		f.write("%s\n" % number_of_tests)
 
 def read_k(k_file):
 	file = open(k_file, 'r')
@@ -96,61 +105,11 @@ def main():
 	k_file = sys.argv[2]
 	number_of_nodes = sys.argv[3]
 	decision_factor = sys.argv[4]
-	number_of_tests = int(sys.argv[5])
-	output_dir = sys.argv[6]
+	output_dir = sys.argv[5]
 	
-	k = read_k(k_file)
-
-	for _k in range(len(k)):
-		accuracy_avg = 0
-		precision_micro_avg = 0
-		precision_macro_avg = 0
-		recall_micro_avg = 0
-		recall_macro_avg = 0
-		f1_micro_avg = 0
-		f1_macro_avg = 0
-		duration_avg = 0
-		
-		print("K = " + str(k[_k]))
-
-		for i in range(number_of_tests):
-			print("---------------------Experiment---------------------")
+	k_list = read_k(k_file)
 			
-			accuracy, precision_micro, precision_macro, recall_micro, recall_macro, f1_micro, f1_macro, duration = run_tests(dirname, _k, k_file, number_of_nodes, decision_factor)
-
-			print("#################Test#################")
-			print("Accuracy: %s" % accuracy)
-			print("Precision Micro: %s" % precision_micro)
-			print("Precision Macro: %s" % precision_macro)
-			print("Recall Micro: %s" % recall_micro)
-			print("Recall Macro: %s" % recall_macro)
-			print("F1 Micro: %s" % f1_micro)
-			print("F1 Macro: %s" % f1_macro)
-			print("Time: %s" % duration)
-			print("######################################")
-			
-			accuracy_avg += accuracy
-			precision_micro_avg += precision_micro
-			precision_macro_avg += precision_macro
-			recall_micro_avg += recall_micro
-			recall_macro_avg += recall_macro
-			f1_micro_avg += f1_micro
-			f1_macro_avg += f1_macro
-			duration_avg += duration
-
-		print("----------------------------------------------------")
-
-		accuracy_avg = accuracy_avg / number_of_tests
-		precision_micro_avg = precision_micro_avg / number_of_tests
-		precision_macro_avg = precision_macro_avg / number_of_tests
-		recall_micro_avg = recall_micro_avg / number_of_tests
-		recall_macro_avg = recall_macro_avg / number_of_tests
-		f1_micro_avg = f1_micro / number_of_tests
-		f1_macro_avg = f1_macro / number_of_tests
-		duration_avg = duration_avg / number_of_tests
-
-		print_results(accuracy_avg, precision_micro, precision_macro, recall_micro, recall_macro, f1_micro, f1_macro, duration_avg)
-		write_results(output_dir, accuracy, precision_micro, precision_macro, recall_micro, recall_macro, f1_micro, f1_macro, duration_avg, _k, k[i], number_of_nodes, decision_factor, number_of_tests)
+	run_tests(dirname, k_list, k_file, number_of_nodes, decision_factor, output_dir)	
 
 
 if __name__ == "__main__":
